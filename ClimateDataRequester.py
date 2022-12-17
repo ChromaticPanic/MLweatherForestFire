@@ -30,8 +30,23 @@ class ClimateDataRequester:
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0'
     }
 
-    def get_hourly_data(self, province: str, stationID: str, startYear: int, endYear: int) -> pd.DataFrame:
+    def get_hourly_data(self, stationID: str, startYear: int = 2022, endYear: int = 2022) -> pd.DataFrame:
         df = pd.DataFrame()
+        baseUrl = 'https://api.weather.gc.ca/collections/climate-hourly/items?datetime=2000-01-01%2000:00:00/2022-10-01%2000:00:00&CLIMATE_IDENTIFIER=' 
+        midUrl = '&sortby=PROVINCE_CODE,CLIMATE_IDENTIFIER,LOCAL_DATE&f=csv&limit=10000&startindex='
+        index = 0
+        offset = 10000
+        
+        try:
+            currIndex = 0
+            for i in range(200):
+                dfCurr = pd.read_csv(baseUrl + id + midUrl + str(currIndex))
+                df.append(dfCurr)
+                currIndex += offset
+                print("Completed " + id + " " + str(currIndex))
+
+        except:
+            print("Station: {} last offset below: {}".format(id, currIndex))
         return df
 
     def get_data(self, province: str, stationID: str, startYear: int = 2022, endYear: int = 2022) -> pd.DataFrame:
